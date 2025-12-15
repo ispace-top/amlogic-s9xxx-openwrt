@@ -248,12 +248,12 @@ on:
       builder_name:
         description: "Set OpenWrt builder signature."
         required: false
-        default: "ophub"
+        default: "Kerwin"
         type: choice
         options:
+          - Kerwin
           - ophub
           - angel
-          - yourname
 
 env:
   FEEDS_CONF: config/${{ inputs.source_branch }}/feeds.conf.default

@@ -1,0 +1,23 @@
+#!/bin/sh
+
+# Set correct model name
+uci set system.@system[0].hostname='Fine3399'
+uci set system.@system[0].pretty_hostname='Fine3399'
+uci commit system
+
+# Run CoreMark benchmark on first boot and save results
+if [ ! -f /etc/coremark.log ]; then
+    echo "Running CoreMark benchmark..." > /etc/coremark.log
+    coremark > /etc/coremark.log 2>&1
+fi
+
+# Create a formatted result file for LuCI
+if [ -f /etc/coremark.log ] && [ ! -f /usr/bin/coremark-results ]; then
+    LOG_FILE="/etc/coremark.log"
+    SCORE=$(grep "CoreMark 1.0" "$LOG_FILE" | sed 's/.*: //')
+    if [ -n "$SCORE" ]; then
+        echo "CoreMark 1.0 : $SCORE" > /usr/bin/coremark-results
+    fi
+fi
+
+exit 0
