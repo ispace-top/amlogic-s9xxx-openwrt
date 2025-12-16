@@ -59,12 +59,34 @@ CONFIG_PACKAGE_luci-i18n-ksmbd-zh-cn=y
 CONFIG_PACKAGE_luci-app-cpufreq=y
 CONFIG_PACKAGE_luci-i18n-cpufreq-zh-cn=y
 CONFIG_PACKAGE_luci-app-statistics=y
+CONFIG_PACKAGE_luci-app-filebrowser=y
+CONFIG_PACKAGE_luci-i18n-filebrowser-zh-cn=y
+CONFIG_PACKAGE_luci-app-serverchan=y
+CONFIG_PACKAGE_luci-i18n-serverchan-zh-cn=y
+CONFIG_PACKAGE_luci-app-accesscontrol=y
+CONFIG_PACKAGE_luci-i18n-accesscontrol-zh-cn=y
+CONFIG_PACKAGE_luci-app-vlmcsd=y
+CONFIG_PACKAGE_luci-i18n-vlmcsd-zh-cn=y
+CONFIG_PACKAGE_luci-app-nft-qos=y
+CONFIG_PACKAGE_luci-i18n-nft-qos-zh-cn=y
+CONFIG_PACKAGE_luci-app-adguardhome=y
+CONFIG_PACKAGE_luci-i18n-adguardhome-zh-cn=y
+CONFIG_PACKAGE_luci-app-openclash=y
+CONFIG_PACKAGE_luci-i18n-openclash-zh-cn=y
 
 # Kernel Modules
 CONFIG_PACKAGE_kmod-fs-exfat=y
 CONFIG_PACKAGE_kmod-fs-ntfs3=y
 CONFIG_PACKAGE_kmod-fs-btrfs=y
 CONFIG_PACKAGE_kmod-tcp-bbr=y
+# IPv6支持
+CONFIG_PACKAGE_kmod-ipv6=y
+CONFIG_PACKAGE_kmod-ip6tables=y
+CONFIG_PACKAGE_kmod-nf-nat6=y
+# 组播/多播支持
+CONFIG_PACKAGE_kmod-igmp-proxy=y
+CONFIG_PACKAGE_kmod-udptunnel4=y
+CONFIG_PACKAGE_kmod-udptunnel6=y
 CONFIG_PACKAGE_kmod-usb-storage-uas=y
 CONFIG_PACKAGE_kmod-usb-serial-ch341=y
 CONFIG_PACKAGE_kmod-usb-serial-cp210x=y
@@ -109,11 +131,18 @@ CONFIG_PACKAGE_btrfs-progs=y
 CONFIG_PACKAGE_fdisk=y
 CONFIG_PACKAGE_lsblk=y
 CONFIG_PACKAGE_cpufreq-info=y
+CONFIG_PACKAGE_filebrowser=y
+CONFIG_PACKAGE_vlmcsd=y
+CONFIG_PACKAGE_adguardhome=y
+CONFIG_PACKAGE_ipv6helper=y
+CONFIG_PACKAGE_igmpproxy=y
+CONFIG_PACKAGE_udpxy=y
 
 # Docker
 CONFIG_PACKAGE_containerd=y
 CONFIG_PACKAGE_docker=y
 CONFIG_PACKAGE_dockerd=y
+CONFIG_PACKAGE_docker-compose=y
 CONFIG_PACKAGE_runc=y
 
 # Filesystem/Sharing
