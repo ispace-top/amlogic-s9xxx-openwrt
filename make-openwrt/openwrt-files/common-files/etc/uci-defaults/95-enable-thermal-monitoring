@@ -1,0 +1,37 @@
+#!/bin/sh
+# Enable thermal monitoring and CPU statistics by default
+# This script runs once on first boot and then deletes itself
+
+# Enable collectd thermal monitoring
+uci -q get luci_statistics.collectd >/dev/null 2>&1 && {
+    # Enable thermal monitoring
+    uci set luci_statistics.collectd_thermal.enable='1'
+
+    # Enable CPU monitoring
+    uci set luci_statistics.collectd_cpu.enable='1'
+
+    # Enable load monitoring
+    uci set luci_statistics.collectd_load.enable='1'
+
+    # Enable interface monitoring
+    uci set luci_statistics.collectd_interface.enable='1'
+    uci set luci_statistics.collectd_interface.Interfaces='br-lan'
+
+    # Enable memory monitoring
+    uci set luci_statistics.collectd_memory.enable='1'
+
+    # Enable disk monitoring
+    uci set luci_statistics.collectd_df.enable='1'
+    uci add_list luci_statistics.collectd_df.Devices='/dev/mmcblk0p2'
+    uci add_list luci_statistics.collectd_df.Devices='/dev/mmcblk0p4'
+    uci set luci_statistics.collectd_df.IgnoreSelected='0'
+
+    # Commit changes
+    uci commit luci_statistics
+
+    # Restart collectd service
+    /etc/init.d/collectd restart >/dev/null 2>&1 &
+    /etc/init.d/luci_statistics restart >/dev/null 2>&1 &
+}
+
+exit 0

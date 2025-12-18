@@ -1,0 +1,24 @@
+#!/bin/sh
+# Configure nginx as default web server for LuCI
+# This script runs once on first boot and then deletes itself
+
+# Check if nginx is installed
+if [ -x /usr/sbin/nginx ]; then
+    # Stop uhttpd
+    /etc/init.d/uhttpd stop
+    /etc/init.d/uhttpd disable
+
+    # Enable and start nginx
+    /etc/init.d/nginx enable
+    /etc/init.d/nginx start
+
+    # Configure nginx to listen on port 80 and 443
+    uci set nginx._lan.listen='80 default_server'
+    uci set nginx._lan.listen='[::]:80 default_server'
+    uci commit nginx
+
+    # Restart nginx to apply changes
+    /etc/init.d/nginx restart
+fi
+
+exit 0

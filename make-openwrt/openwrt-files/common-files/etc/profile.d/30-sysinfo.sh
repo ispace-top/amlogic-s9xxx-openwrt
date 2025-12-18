@@ -173,15 +173,47 @@ cpu_tempx="$(echo ${cpu_temp} | sed -e 's/°C//g' -e 's/[ ][ ]*//g')"
 [[ "$(echo ${cpu_tempx} | awk -F'.' '{print $1}' | wc -c)" -gt "3" ]] && cpu_tempx="${cpu_tempx:0:2}.0"
 
 # Architecture
-if [[ -x "/usr/bin/cpustat" ]]; then
-	sys_temp=$(/usr/bin/cpustat -A)
-else
-	sys_temp=$(cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq)
+# Try to load custom chip model from board-specific config first
+chip_model=""
+cpu_cores=""
+if [[ -f "/etc/openwrt-board-release.conf" ]]; then
+	source /etc/openwrt-board-release.conf
+	[[ -n "${CHIP_MODEL}" ]] && chip_model="${CHIP_MODEL}"
+	# If CPUARCH is set (for backward compatibility), use it directly
+	[[ -n "${CPUARCH}" ]] && sys_temp="${CPUARCH}"
 fi
+
+# If no pre-set CPUARCH, auto-detect CPU cores
+if [[ -z "${sys_temp}" ]]; then
+	# Get CPU core information from cpustat or /proc/cpuinfo
+	if [[ -x "/usr/bin/cpustat" ]]; then
+		cpu_cores=$(/usr/bin/cpustat -A)
+	else
+		cpu_cores=$(cat /proc/cpuinfo | grep name | cut -f2 -d: | uniq)
+	fi
+
+	# Combine chip model with CPU cores if chip model is available
+	if [[ -n "${chip_model}" && -n "${cpu_cores}" ]]; then
+		# Format: Chip Model (CPU Cores)
+		sys_temp="${chip_model} (${cpu_cores})"
+	elif [[ -n "${chip_model}" ]]; then
+		# Only chip model available
+		sys_temp="${chip_model}"
+	elif [[ -n "${cpu_cores}" ]]; then
+		# Only CPU cores available
+		sys_temp="${cpu_cores}"
+	fi
+fi
+
 sys_tempx=$(echo ${sys_temp} | sed 's/ / /g')
 
 # display info
+# Try to load custom board model from board-specific config first
 machine_model=$(cat /proc/device-tree/model | tr -d "\000")
+if [[ -f "/etc/openwrt-board-release.conf" ]]; then
+	source /etc/openwrt-board-release.conf
+	[[ -n "${BOARDNAME}" ]] && machine_model="${BOARDNAME}"
+fi
 printf " Device Model: \x1B[93m%s\x1B[0m" "${machine_model}"
 echo ""
 printf " Architecture: \x1B[93m%s\x1B[0m" "${sys_tempx}"

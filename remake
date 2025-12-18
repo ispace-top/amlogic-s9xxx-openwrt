@@ -902,6 +902,14 @@ replace_kernel() {
     [[ -d "${tag_bootfs}/dtb/${PLATFORM}" ]] || mkdir -p ${tag_bootfs}/dtb/${PLATFORM}
     tar -mxzf ${kernel_dtb} -C ${tag_bootfs}/dtb/${PLATFORM}
     [[ "${PLATFORM}" == "rockchip" ]] && ln -sf dtb ${tag_bootfs}/dtb-${kernel_name}
+
+    # Copy custom dtb file if exists
+    custom_dtb_dir="${PWD}/make-openwrt/openwrt-files/dtb-custom"
+    if [[ -f "${custom_dtb_dir}/${FDTFILE}" ]]; then
+        echo "Using custom DTB file: ${FDTFILE}"
+        cp -f "${custom_dtb_dir}/${FDTFILE}" "${tag_bootfs}/dtb/${PLATFORM}/${FDTFILE}"
+    fi
+
     [[ "$(ls ${tag_bootfs}/dtb/${PLATFORM} -l 2>/dev/null | grep "^-" | wc -l)" -ge "2" ]] || error_msg "/boot/dtb/${PLATFORM} files is missing."
 
     # 03. For /lib/modules/${kernel_name}

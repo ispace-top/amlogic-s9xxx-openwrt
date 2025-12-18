@@ -43,6 +43,11 @@ fi
 #
 # ------------------------------- Main source ends -------------------------------
 
+# Set default language to Chinese
+sed -i 's/luci.main.lang=auto/luci.main.lang=zh_cn/g' feeds/luci/modules/luci-base/root/etc/uci-defaults/luci-base 2>/dev/null || true
+sed -i '/luci.main.lang/d' feeds/luci/modules/luci-base/root/etc/config/luci 2>/dev/null || true
+sed -i '/option lang/d' feeds/luci/modules/luci-base/root/etc/config/luci 2>/dev/null || true
+
 # ------------------------------- Other started -------------------------------
 #
 # Add luci-app-amlogic
