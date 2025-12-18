@@ -3,6 +3,7 @@
 ## 📋 目录
 
 - [设备信息](#设备信息)
+- [固件能力对比](#固件能力对比)
 - [固件特性](#固件特性)
 - [LuCI 应用列表](#luci-应用列表)
 - [系统功能](#系统功能)
@@ -32,11 +33,120 @@
 
 本固件基于以下开源项目构建，提供三个版本供选择：
 
-| 固件版本 | 上游源码 | 特点 |
+| 固件版本 | 上游源码 | 特点 | 内核版本 | 应用数量 |
+|---------|---------|------|----------|----------|
+| **OpenWrt Main** | [OpenWrt Official](https://github.com/openwrt/openwrt) | 官方最新版本，稳定性高 | 6.1.y, 6.12.y | ~25个 |
+| **ImmortalWrt Master** | [ImmortalWrt](https://github.com/immortalwrt/immortalwrt) | 中文优化，插件丰富 | 6.1.y, 6.12.y | ~23个 |
+| **LEDE Master** | [Lean's LEDE](https://github.com/coolsnowwolf/lede) | 国内流行版本，性能优化 | 6.1.y, 6.12.y | ~31个 |
+
+> **内核说明**：所有版本均支持 RK3399 专用的 rk35xx 内核 (6.1.y) 和通用的 stable 内核 (6.1.y, 6.12.y)
+
+---
+
+## 📊 固件能力对比
+
+以下表格详细列举了本固件在不同源码分支中的功能支持情况：
+
+### 核心系统功能对比
+
+| 功能/应用 | OpenWrt Main | ImmortalWrt Master | LEDE Master | 说明 |
+|----------|--------------|-------------------|-------------|------|
+| **基础系统** | | | | |
+| LuCI Web界面 | ✅ | ✅ | ✅ | 全中文界面 |
+| 防火墙 (Firewall) | ✅ | ✅ | ✅ | 基于 nftables |
+| 软件包管理 (opkg) | ✅ | ✅ | ✅ | 在线安装软件包 |
+| Web终端 (ttyd) | ✅ | ✅ | ✅ | 浏览器SSH终端 |
+| CPU频率管理 | ✅ | ✅ | ✅ | 性能/省电模式切换 |
+| 系统统计 | ✅ | ✅ | ✅ | CPU/内存/网络监控 |
+| Argon主题配置 | ✅ | ✅ | ✅ | 自定义主题外观 |
+| **设备管理** | | | | |
+| Amlogic设备管理 | ✅ | ❌ | ✅ | 固件升级/安装到eMMC |
+| 磁盘管理 (diskman) | ❌ | ❌ | ✅ | 磁盘分区/格式化 |
+| 系统升级助手 | ✅ | ❌ | ❌ | 在线升级系统 |
+
+### 网络功能对比
+
+| 功能/应用 | OpenWrt Main | ImmortalWrt Master | LEDE Master | 说明 |
+|----------|--------------|-------------------|-------------|------|
+| **网络服务** | | | | |
+| 动态DNS (DDNS) | ✅ | ✅ | ✅ | 支持多个提供商 |
+| 网络加速 (TurboACC) | ✅ | ✅ | ✅ | BBR/流量卸载 |
+| UPnP | ✅ | ❌ | ✅ | 自动端口映射 |
+| 网络唤醒 (WoL) | ❌ | ❌ | ✅ | 远程唤醒设备 |
+| IP/MAC绑定 | ❌ | ❌ | ✅ | ARP绑定 |
+| 访问控制 | ✅ | ✅ | ✅ | 上网时间管控 |
+| IP限速 (nft-qos) | ✅ | ✅ | ✅ | 基于IP的QoS |
+| 网速测试 | ✅ | ✅ | ✅ | SpeedTest测速 |
+| **VPN服务** | | | | |
+| OpenVPN | ✅ | ✅ | ✅ | 经典VPN协议 |
+| WireGuard | ✅ | ✅ | ✅ | 现代高性能VPN |
+| OpenConnect (ocserv) | ✅ | ✅ | ✅ | Cisco AnyConnect |
+| IPSec VPN | ✅ | ✅ | ✅ | 企业级VPN |
+| **代理服务** | | | | |
+| PassWall | ✅ | ✅ | ✅ | 多协议代理 |
+| OpenClash | ✅ | ✅ | ✅ | Clash代理客户端 |
+
+### 文件与存储功能对比
+
+| 功能/应用 | OpenWrt Main | ImmortalWrt Master | LEDE Master | 说明 |
+|----------|--------------|-------------------|-------------|------|
+| FileBrowser | ✅ | ✅ | ✅ | Web文件管理器 |
+| 文件传输 | ❌ | ❌ | ✅ | LEDE专属文件传输 |
+| 网络共享 (KSMBd) | ✅ | ✅ | ✅ | 内核级Samba服务 |
+| Samba4 | ✅ | ❌ | ❌ | 用户态Samba (OpenWrt) |
+| 内网穿透 - 客户端 (frpc) | ✅ | ❌ | ✅ | FRP客户端 |
+| 内网穿透 - 服务端 (frps) | ✅ | ❌ | ✅ | FRP服务端 |
+
+### 容器与应用服务对比
+
+| 功能/应用 | OpenWrt Main | ImmortalWrt Master | LEDE Master | 说明 |
+|----------|--------------|-------------------|-------------|------|
+| Docker管理器 | ✅ | ✅ | ✅ | 图形化管理Docker |
+| Docker引擎 | ✅ | ✅ | ✅ | 完整Docker支持 |
+| Docker Compose | ✅ | ✅ | ✅ | 容器编排 |
+| AdGuard Home | ✅ | ✅ | ✅ | DNS级广告拦截 |
+| KMS服务器 | ✅ | ✅ | ✅ | Windows激活 |
+| 微信通知 (ServerChan) | ✅ | ✅ | ✅ | 系统事件推送 |
+
+### 底层支持对比
+
+| 功能特性 | OpenWrt Main | ImmortalWrt Master | LEDE Master | 说明 |
+|---------|--------------|-------------------|-------------|------|
+| **内核版本** | | | | |
+| Stable内核 6.1.y | ✅ | ✅ | ✅ | 长期支持版本 |
+| Stable内核 6.12.y | ✅ | ✅ | ✅ | 最新稳定版 |
+| RK35xx专用内核 | ✅ | ✅ | ✅ | RK3399优化内核 |
+| **硬件支持** | | | | |
+| RK3399硬件加密 | ✅ | ✅ | ✅ | crypto-hw-rockchip |
+| RK3399温度监控 | ✅ | ✅ | ✅ | hwmon-rockchip-thermal |
+| 双千兆网卡 | ✅ | ✅ | ✅ | dwmac-rockchip |
+| USB 2.0/3.0 | ✅ | ✅ | ✅ | 完整USB支持 |
+| USB存储UAS加速 | ✅ | ✅ | ✅ | 提升硬盘性能 |
+| **网络协议** | | | | |
+| IPv4/IPv6双栈 | ✅ | ✅ | ✅ | 完整IPv6支持 |
+| 组播/IPTV | ✅ | ✅ | ✅ | IGMP代理+udpxy |
+| BBR拥塞控制 | ✅ | ✅ | ✅ | TCP BBR算法 |
+| 全锥型NAT | ✅ | ✅ | ✅ | FullCone NAT |
+| **文件系统** | | | | |
+| EXT4 | ✅ | ✅ | ✅ | Linux标准 |
+| NTFS (ntfs3) | ✅ | ✅ | ✅ | Windows分区 |
+| exFAT/VFAT | ✅ | ✅ | ✅ | U盘常用格式 |
+| BTRFS | ✅ | ✅ | ✅ | 高级文件系统 |
+| XFS | ✅ | ✅ | ✅ | 高性能文件系统 |
+| HFS+ | ✅ | ✅ | ✅ | macOS分区 |
+
+### 版本选择建议
+
+根据不同使用场景，推荐选择合适的固件版本：
+
+| 使用场景 | 推荐版本 | 理由 |
 |---------|---------|------|
-| **OpenWrt Main** | [OpenWrt Official](https://github.com/openwrt/openwrt) | 官方最新版本，稳定性高 |
-| **ImmortalWrt Master** | [ImmortalWrt](https://github.com/immortalwrt/immortalwrt) | 中文优化，插件丰富 |
-| **LEDE Master** | [Lean's LEDE](https://github.com/coolsnowwolf/lede) | 国内流行版本，性能优化 |
+| **家庭用户** | LEDE Master | 应用最丰富(31个)，包含磁盘管理、文件传输等实用工具 |
+| **轻量级使用** | ImmortalWrt Master | 应用精简(23个)，资源占用小，运行流畅 |
+| **追求稳定** | OpenWrt Main | 官方版本，更新及时，长期支持 |
+| **开发测试** | OpenWrt Main | 软件包管理器更完善，便于安装测试 |
+| **内网穿透需求** | LEDE / OpenWrt Main | 包含 frp 客户端和服务端 |
+| **企业环境** | OpenWrt Main | 系统升级助手，便于批量管理 |
 
 ---
 
@@ -72,7 +182,9 @@
 
 ## 📦 LuCI 应用列表
 
-本固件预装了 **22 个 LuCI 应用**，涵盖系统管理、网络服务、安全防护等多个方面。
+本固件预装了丰富的 LuCI 应用（**ImmortalWrt 23个** / **OpenWrt Main 25个** / **LEDE 31个**），涵盖系统管理、网络服务、安全防护等多个方面。
+
+以下列表展示了主要应用（各版本共有应用）：
 
 ### 🔧 系统基础 (3个)
 
@@ -498,9 +610,23 @@ config/
 
 ## 📝 更新日志
 
-### 最新版本特性
+### v1.1 (2024-12-18)
 
-#### 新增应用 (v2024.12)
+#### 文档更新
+
+- ✅ 新增"固件能力对比"章节 - 详细对比三个固件版本的功能支持
+- ✅ 添加完整的能力对比表格：
+  - 核心系统功能对比
+  - 网络功能对比
+  - 文件与存储功能对比
+  - 容器与应用服务对比
+  - 底层支持对比（内核/硬件/协议/文件系统）
+- ✅ 新增版本选择建议 - 根据使用场景推荐最适合的固件版本
+- ✅ 更新固件版本表格 - 添加内核版本和应用数量信息
+
+### v1.0 (2024-12-16)
+
+#### 新增应用
 
 - ✅ FileBrowser - Web 文件管理器
 - ✅ ServerChan - 微信通知推送
@@ -533,6 +659,6 @@ config/
 
 ---
 
-**文档版本**：v1.0
-**更新日期**：2024-12-16
+**文档版本**：v1.1
+**更新日期**：2024-12-18
 **适用固件版本**：OpenWrt Main / ImmortalWrt Master / LEDE Master
