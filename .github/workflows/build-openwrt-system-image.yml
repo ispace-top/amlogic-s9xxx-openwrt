@@ -48,6 +48,7 @@ on:
           - eaidk-610
           - emb3531
           - fine3399
+          - fine3399-plus
           - firefly-rk3399
           - fmx1-pro
           - jp-tvbox
