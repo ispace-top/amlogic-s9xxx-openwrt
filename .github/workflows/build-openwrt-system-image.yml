@@ -408,12 +408,51 @@ jobs:
           restore-keys: |
             openwrt-${{ env.REPO_NAME }}-
 
+      - name: Pre-configure Rust to fix CI build issue
+        run: |
+          # 修复 Rust 在 CI 环境中的编译问题
+          cd openwrt/
+          # 修改 Rust 包的 Makefile，在配置阶段就设置正确的值
+          if [ -f "feeds/packages/lang/rust/Makefile" ]; then
+            echo "Patching Rust Makefile to fix CI build issue..."
+            sed -i '/--set llvm.download-ci-llvm=true/d' feeds/packages/lang/rust/Makefile
+            # 将 download-ci-llvm 设置为 false（不使用 if-unchanged，因为它只能在 Git 仓库中使用）
+            sed -i 's/download-ci-llvm=true/download-ci-llvm=false/g' feeds/packages/lang/rust/Makefile
+          fi
+
+      - name: Fix rust build issue during compilation
+        run: |
+          # 在编译过程中持续监控和修复 config.toml
+          cd /builder/openwrt
+          # 创建一个后台任务，每30秒检查并修复 config.toml
+          while true; do
+            find build_dir -name "config.toml" -type f 2>/dev/null | while read -r file; do
+              if grep -q 'download-ci-llvm = true' "$file" 2>/dev/null; then
+                echo "Fixing $file"
+                sed -i 's/download-ci-llvm = true/download-ci-llvm = false/' "$file"
+              fi
+              # 同时也修复可能存在的 "if-unchanged" 值
+              if grep -q 'download-ci-llvm = "if-unchanged"' "$file" 2>/dev/null; then
+                echo "Fixing if-unchanged in $file"
+                sed -i 's/download-ci-llvm = "if-unchanged"/download-ci-llvm = false/' "$file"
+              fi
+            done
+            sleep 30
+          done &
+          FIX_PID=$!
+          echo "FIX_PID=${FIX_PID}" >> $GITHUB_ENV
+
       - name: Compile the OpenWrt
         id: compile
         run: |
           cd openwrt/
           echo -e "$(nproc) thread compile"
           make -j$(($(nproc) + 1)) V=s || make -j1 || make -j1 V=s
+
+          # 停止后台修复任务
+          if [ -n "$FIX_PID" ]; then
+            kill $FIX_PID 2>/dev/null || true
+          fi
 
           echo -e "ccache statistics:"
           ccache -s 2>/dev/null
